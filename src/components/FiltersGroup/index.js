@@ -2,11 +2,10 @@ import './index.css'
 
 const FiltersGroup = props => {
   const {
+    searchInput,
     categoryOptions,
-    ratingsList,
     activeCategoryId,
     activeRatingId,
-    searchInput,
     onClearFilter,
   } = props
 
@@ -14,12 +13,12 @@ const FiltersGroup = props => {
     onClearFilter()
   }
 
-  const searchInputChange = event => {
-    const {onSearchInputChange} = props
-    onSearchInputChange(event.target.value)
+  const onChangeSearchInput = event => {
+    const {changeSearchInput} = props
+    changeSearchInput(event.target.value)
   }
 
-  const renderCategory = () => {
+  const renderCategory = () =>
     categoryOptions.map(each => {
       const {onCategoryChange} = props
       const categoryChange = () => {
@@ -35,19 +34,16 @@ const FiltersGroup = props => {
         </li>
       )
     })
-  }
 
   const renderRating = () => {
-    ratingsList.map(each => {
-      const {onRatingChange} = props
-      const ratingChange = () => {
-        onRatingChange(each.ratingId)
-      }
+    const {ratingsList, onRatingChange} = props
+    return ratingsList.map(each => {
+      const ratingChange = () => onRatingChange(each.ratingId)
       const clasname = activeRatingId === each.ratingId ? 'activeRati' : ''
       return (
         <li key={each.ratingId}>
           <button type="button" className={clasname} onClick={ratingChange}>
-            <img src={each.imageUrl} alt={`rating ${each.ratingId}`} />& up
+            <img src={each.imageUrl} alt={`rating ${each.ratingId}`} /> & up
           </button>
         </li>
       )
@@ -56,7 +52,12 @@ const FiltersGroup = props => {
 
   return (
     <div className="filters-group-container">
-      <input type="search" onChange={searchInputChange} value={searchInput} />
+      <input
+        type="search"
+        placeholder="search"
+        onChange={onChangeSearchInput}
+        value={searchInput}
+      />
       <h1>Category</h1>
       <ul>{renderCategory()}</ul>
       <h1>Rating</h1>
