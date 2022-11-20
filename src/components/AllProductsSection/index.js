@@ -1,5 +1,4 @@
-/* eslint-disable prettier/prettier */
-
+/* eslint-disable no-unreachable */
 import {Component} from 'react'
 import Loader from 'react-loader-spinner'
 import Cookies from 'js-cookie'
@@ -75,7 +74,7 @@ const apiConstants = {
 }
 
 class AllProductsSection extends Component {
-   state = {
+  state = {
     productsList: [],
     apiStatus: apiConstants.initial,
     activeOptionId: sortbyOptions[0].optionId,
@@ -88,15 +87,20 @@ class AllProductsSection extends Component {
     this.getProducts()
   }
 
-getProducts = async () => {
-       this.setState({apiStatus: apiConstants.loading})
+  getProducts = async () => {
+    this.setState({apiStatus: apiConstants.loading})
 
     const jwtToken = Cookies.get('jwt_token')
 
     // TODO: Update the code to get products with filters applied
 
-const {activeOptionId, activeCategoryId, activeRatingId, searchInput} = this.state
-    const apiUrl = `https://apis.ccbp.in/products?sort_by=${activeOptionId}?title_search=${searchInput}?category=${activeCategoryId}?rating=${activeRatingId}`    
+    const {
+      activeOptionId,
+      activeCategoryId,
+      activeRatingId,
+      searchInput,
+    } = this.state
+    const apiUrl = `https://apis.ccbp.in/products?sort_by=${activeOptionId}&title_search=${searchInput}&category=${activeCategoryId}&rating=${activeRatingId}`
     const options = {
       headers: {
         Authorization: `Bearer ${jwtToken}`,
@@ -104,8 +108,11 @@ const {activeOptionId, activeCategoryId, activeRatingId, searchInput} = this.sta
       method: 'GET',
     }
     const response = await fetch(apiUrl, options)
+    console.log(response)
+
     if (response.ok) {
       const fetchedData = await response.json()
+      console.log(fetchedData)
       const updatedData = fetchedData.products.map(product => ({
         title: product.title,
         brand: product.brand,
@@ -118,9 +125,8 @@ const {activeOptionId, activeCategoryId, activeRatingId, searchInput} = this.sta
         productsList: updatedData,
         apiStatus: apiConstants.success,
       })
-    }
-    else {
-        this.setState({apiStatus:apiConstants.failure})
+    } else {
+      this.setState({apiStatus: apiConstants.failure})
     }
   }
 
@@ -128,7 +134,7 @@ const {activeOptionId, activeCategoryId, activeRatingId, searchInput} = this.sta
     this.setState({activeOptionId}, this.getProducts)
   }
 
-    onSearchInputChange = value => {
+  onSearchInputChange = value => {
     this.setState({searchInput: value}, this.getProducts)
   }
 
@@ -142,11 +148,14 @@ const {activeOptionId, activeCategoryId, activeRatingId, searchInput} = this.sta
 
   onClearFilter = () => {
     this.setState(
-      {activeCategoryId: '', searchInput: '', activeRatingId: ''},
+      {
+        activeCategoryId: '',
+        searchInput: '',
+        activeRatingId: '',
+      },
       this.getProducts,
     )
   }
-
 
   renderProductsList = () => {
     const {productsList, activeOptionId} = this.state
@@ -154,9 +163,9 @@ const {activeOptionId, activeCategoryId, activeRatingId, searchInput} = this.sta
 
     // TODO: Add No Products View
     return (
-<>
-        {noProducts?     
-        <div>
+      <>
+        {noProducts ? (
+          <div>
             <img
               src="https://assets.ccbp.in/frontend/react-js/nxt-trendz/nxt-trendz-products-error-view.png"
               alt="products failure"
@@ -166,23 +175,23 @@ const {activeOptionId, activeCategoryId, activeRatingId, searchInput} = this.sta
               we are having some trouble processing your request please try
               again
             </p>
-          </div> :  
+          </div>
+        ) : (
           <div className="all-products-container">
-        <ProductsHeader
-          activeOptionId={activeOptionId}
-          sortbyOptions={sortbyOptions}
-          changeSortby={this.changeSortby}
-        />
-        <ul className="products-list">
-          {productsList.map(product => (
-            <ProductCard productData={product} key={product.id} />
-          ))}
-        </ul>
-      </div>
-    }
-    </>
-     )
-   
+            <ProductsHeader
+              activeOptionId={activeOptionId}
+              sortbyOptions={sortbyOptions}
+              changeSortby={this.changeSortby}
+            />
+            <ul className="products-list">
+              {productsList.map(product => (
+                <ProductCard productData={product} key={product.id} />
+              ))}
+            </ul>
+          </div>
+        )}
+      </>
+    )
   }
 
   renderLoader = () => (
@@ -191,7 +200,7 @@ const {activeOptionId, activeCategoryId, activeRatingId, searchInput} = this.sta
     </div>
   )
 
-   renderFailure = () => (
+  renderFailure = () => (
     <div>
       <img
         src="https://assets.ccbp.in/frontend/react-js/nxt-trendz/nxt-trendz-products-error-view.png"
@@ -202,7 +211,7 @@ const {activeOptionId, activeCategoryId, activeRatingId, searchInput} = this.sta
     </div>
   )
 
-    differentViews = () => {
+  differentViews = () => {
     const {apiStatus} = this.state
     switch (apiStatus) {
       case apiConstants.success:
@@ -221,20 +230,21 @@ const {activeOptionId, activeCategoryId, activeRatingId, searchInput} = this.sta
     const {activeCategoryId, activeRatingId, searchInput} = this.state
 
     return (
-       <div className="all-products-section">
-        {/* TODO: Update the below element */}
-        <FiltersGroup
-          activeCategoryId={activeCategoryId}
-          categoryOptions={categoryOptions}
-          activeRatingId={activeRatingId}
-          onCategoryChange={this.onCategoryChange}
-          onSearchInputChange={this.onSearchInputChange}
-          searchInput={searchInput}
-          ratingsList={ratingsList}
-          onRatingChange={this.onRatingChange}
-        />
-
-        {this.differentViews()}
+      <div>
+        <div className="all-products-section">
+          {/* TODO: Update the below element */}
+          <FiltersGroup
+            activeCategoryId={activeCategoryId}
+            categoryOptions={categoryOptions}
+            activeRatingId={activeRatingId}
+            onCategoryChange={this.onCategoryChange}
+            onSearchInputChange={this.onSearchInputChange}
+            searchInput={searchInput}
+            ratingsList={ratingsList}
+            onRatingChange={this.onRatingChange}
+          />
+          <div>{this.differentViews()}</div>
+        </div>
       </div>
     )
   }
